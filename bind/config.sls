@@ -67,6 +67,19 @@ bind_local_config:
     - watch_in:
       - service: bind
 
+bind_options_config:
+  file.managed:
+    - name: {{ map.options_config }}
+    - source: 'salt://{{ map.config_source_dir }}/named.conf.options'
+    - template: jinja
+    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
+    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
+    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
+    - require:
+      - pkg: bind
+    - watch_in:
+      - service: bind
+
 {% if grains['os_family'] != 'Arch' %}
 bind_default_config:
   file.managed:
@@ -85,19 +98,6 @@ bind_key_config:
   file.managed:
     - name: {{ map.key_config }}
     - source: 'salt://{{ map.config_source_dir }}/named.conf.key'
-    - template: jinja
-    - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
-    - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
-    - mode: {{ salt['pillar.get']('bind:config:mode', '644') }}
-    - require:
-      - pkg: bind
-    - watch_in:
-      - service: bind
-
-bind_options_config:
-  file.managed:
-    - name: {{ map.options_config }}
-    - source: 'salt://{{ map.config_source_dir }}/named.conf.options'
     - template: jinja
     - user: {{ salt['pillar.get']('bind:config:user', map.user) }}
     - group: {{ salt['pillar.get']('bind:config:group', map.group) }}
